@@ -1,0 +1,5 @@
+server-1.tld.com,10.10.0.1,Apache 2.4,PHP 5,MySQL 5.5
+server-2.tld.com,10.10.0.1,Apache 2.4,PHP 5,MySQL 5.5
+server-4.tld.com,10.10.0.1,Apache 2.4,PHP 5,MySQL 5.5
+server-10.tld.com,10.10.0.1,Apache 2.4,PHP 5,MySQL 5.5
+server-30.tld.com,10.10.0.1,Apache 2.4,PHP 5,MySQL 5.5
