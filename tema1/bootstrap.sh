@@ -1,7 +1,11 @@
 #!/bin/bash
-
-log() {
-
+### funk
+logMessage() {
+    local param=$1
+    local cfgFile="/var/log/system-bootstrap.log"
+    touch $cfgFile
+    echo $param
+    echo $param >> $cfgFile
 }
 
 welcome() {
@@ -10,24 +14,21 @@ welcome() {
 
 updateSysProg() {
     echo "Updating system programs..."
-    su --command="yum update"
+    sudo yum install yum-utils
+    sudo package-cleanup --oldkernels --count=2
+    sudo yum update
 }
 
 installGit() {
     echo "Installing git..."
-    # if hash git 2>/dev/null; then
-    # 	echo "git is already installed"
-    # else
-    # 	echo "git is not installed"
-    # 	echo "git will be installed now"
-    # 	su -c "yum install git"
-    # fi
+    sudo yum install git
+    echo "git is now installed."
 }
 
 setupNetworkAdapter() {
     echo "Configuring the host-only adaptor"
     local conn="enp0s8"
-    local adapterIsUp=$(nmcli -t -f NAME conn show --active | grep $conn | wc -l)
+    adapterIsUp=$(nmcli -t -f NAME conn show --active | grep $conn | wc -l)
 
     if [[ $adapterIsUp -gt 0 ]]; then
         echo "Device $conn is up"
@@ -43,12 +44,15 @@ setupNetworkAdapter() {
             adapterIsUp=0
         fi
     fi
-
-    return adapterIsUp
 }
 
-adapterIsUp = setupNetworkAdapter()
+### main script
 
+welcome
+updateSysProg
+installGit
+setupNetworkAdapter
+echo $adapterIsUp
 if [[ $adapterIsUp -gt 0 ]]; then
 	echo "Please enter your ssh key:"
 	ip=$(ip address show enp0s8 | grep "inet " | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | cut -d ' ' -f 2)
@@ -64,3 +68,4 @@ if [[ $adapterIsUp -gt 0 ]]; then
         echo "ERROR: ssh-add was unable to contact the authentication agen."
 	fi
 fi
+
