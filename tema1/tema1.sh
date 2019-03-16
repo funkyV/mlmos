@@ -21,7 +21,7 @@ readCfg() {
         chmod 777 system-init-cfg.txt
     fi
 
-    file="system-init-cfg.txt"
+    file="home/vminea/system-init-cfg.txt"
     while IFS=: read -r f1 f2 f3 f4 f5 f6 f7 f8
     do
         repo=$f1
@@ -50,4 +50,5 @@ readCfg() {
 }
 # hostnamectl set-hostname $hostname
 readCfg
-bash bootstrap.sh $repo $ssh_key $apps $update_sys $net_device $ip_addrs $hostname $subnetmask
+git clone $repo /home/vminea/mlmos
+bash /home/vminea/mlmos/tema1/bootstrap.sh $repo $ssh_key $apps $update_sys $net_device $ip_addrs $hostname $subnetmask
