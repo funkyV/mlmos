@@ -1,5 +1,13 @@
 #!/bin/bash
-source
+$repo=$1
+$ssh_key=$2
+$apps=$3
+$update_sys=$4
+$net_device=$5
+$ip_addr=$6
+$hostname=$7
+$subnetmask=$8
+
 ### funk
 logMessage() {
     local param=$1
@@ -16,57 +24,53 @@ welcome() {
 }
 
 updateSysProg() {
-    logMessage "Updating system programs..."
-    sudo yum install yum-utils
-    sudo package-cleanup --oldkernels --count=2
-    sudo yum update
+    if [[ updateSysProg -eq 1]]; then
+        logMessage "Updating system programs..."
+        sudo yum install yum-utils
+        sudo package-cleanup --oldkernels --count=2
+        sudo yum update
+    fi
 }
 
-installGit() {
-    logMessage "Installing git..."
-    sudo yum install git
-    logMessage "git is now installed."
+installApps() {
+    logMessage "Installing ${apps}"
+    sudo yum install $apps
+    logMessage "${apps} are now installed."
 }
 
 setupNetworkAdapter() {
     logMessage "Configuring the host-only adaptor"
-    local conn="enp0s8"
-    adapterIsUp=$(nmcli -t -f NAME conn show --active | grep $conn | wc -l)
+    adapterIsUp=$(nmcli -t -f NAME conn show --active | grep $net_device | wc -l)
 
     if [[ $adapterIsUp -gt 0 ]]; then
-        logMessage "Device $conn is up"
+        logMessage "Device $net_device is up"
     else
-        logMessage "Device $conn is down"
-        logMessage "Bringing device $conn up..."
-        nmcli conn up $conn
+        logMessage "Device $net_device is down"
+        logMessage "Bringing device $connet_devicen up..."
+        nmcli conn up $net_device
         if [[ $? -eq 0 ]]; then
-            logMessage "Device $conn is now up."
+            logMessage "Device $net_device is now up."
             adapterIsUp=1
         else
-            logMessage "ERROR: Device $conn didn't come up."
+            logMessage "ERROR: Device $net_device didn't come up."
             adapterIsUp=0
         fi
     fi
 }
 
-
-
 ### main script
-readCfg
 welcome
 updateSysProg
-installGit
+installApps
 setupNetworkAdapter
 
 if [[ $adapterIsUp -gt 0 ]]; then
-	logMessage "Please enter your ssh key:"
 	ip=$(ip address show enp0s8 | grep "inet " | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | cut -d ' ' -f 2)
-	read sshkey
 	eval "$(ssh-agent -s)"
-	statusCode=$(ssh-add $sshkey)
+	statusCode=$(ssh-add $ssh_key)
 	if [[ $statusCode -eq 0 ]]; then
 		logMessage "SSH key added."
-		logMessage "Now you can ssh to $ip without a password."
+		logMessage "Now you can ssh to $ip_addr without a password."
         local selinuxCfgFile='/etc/selinux/config'
         sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' $selinuxCfgFile
         sudo sed -i 's/SELINUX=permissive/SELINUX=disabled/' $selinuxCfgFile

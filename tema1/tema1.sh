@@ -11,9 +11,14 @@ logMessage() {
 
 readCfg() {
     if [ ! -f system-init-cfg.txt ]; then
-        echo "File not found!"
+        logMessage "File not found!"
+        logMessage "File created"
+        echo "github.com/funkyV/mlmos.git:pub_key.txt:git python docker:1:enp0s8:192.168.99.101:my-centos-vm.locallan:255.255.255.0
+        " >> system-init-cfg.txt
+        chmod 777 system-init-cfg.txt
     else
-        echo "Cfg file found!"
+        logMessage "Cfg file found!"
+        chmod 777 system-init-cfg.txt
     fi
 
     file="system-init-cfg.txt"
@@ -34,14 +39,15 @@ readCfg() {
         ssh_key="$key"
     done <"$ssh_key_path"
 
-    echo $repo
-    echo $ssh_key
-    echo $apps
-    echo $update_sys
-    echo $net_device
-    echo $ip_addrs
-    echo $hostname
-    echo $subnetmask
+    # echo $repo
+    # echo $ssh_key
+    # echo $apps
+    # echo $update_sys
+    # echo $net_device
+    # echo $ip_addrs
+    # echo $hostname
+    # echo $subnetmask
 }
-
+# hostnamectl set-hostname $hostname
 readCfg
+bash bootstrap.sh $repo $ssh_key $apps $update_sys $net_device $ip_addrs $hostname $subnetmask
