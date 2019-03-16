@@ -26,15 +26,15 @@ welcome() {
 updateSysProg() {
     if [[ updateSysProg -eq 1]]; then
         logMessage "Updating system programs..."
-        sudo yum install yum-utils
-        sudo package-cleanup --oldkernels --count=2
-        sudo yum update
+        yum install yum-utils
+        package-cleanup --oldkernels --count=2
+        yum update
     fi
 }
 
 installApps() {
     logMessage "Installing ${apps}"
-    sudo yum install $apps
+    yum install $apps
     logMessage "${apps} are now installed."
 }
 
@@ -65,16 +65,16 @@ installApps
 setupNetworkAdapter
 
 if [[ $adapterIsUp -gt 0 ]]; then
-	ip=$(ip address show enp0s8 | grep "inet " | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | cut -d ' ' -f 2)
+	# ip=$(ip address show enp0s8 | grep "inet " | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | cut -d ' ' -f 2)
 	eval "$(ssh-agent -s)"
 	statusCode=$(ssh-add $ssh_key)
 	if [[ $statusCode -eq 0 ]]; then
 		logMessage "SSH key added."
 		logMessage "Now you can ssh to $ip_addr without a password."
         local selinuxCfgFile='/etc/selinux/config'
-        sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' $selinuxCfgFile
-        sudo sed -i 's/SELINUX=permissive/SELINUX=disabled/' $selinuxCfgFile
-        sudo setenforce 0
+        sed -i 's/SELINUX=enforcing/SELINUX=disabled/' $selinuxCfgFile
+        sed -i 's/SELINUX=permissive/SELINUX=disabled/' $selinuxCfgFile
+        setenforce 0
 	elif [[ $statusCode -eq 1 ]]; then
 		logMessage "ERROR: Specified command failed."
     elif [[ $statusCode -eq 2 ]]; then

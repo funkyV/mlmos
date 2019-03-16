@@ -3,7 +3,7 @@ Description=MLMOS: Tema1
            
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/tema1.sh
+ExecStart=/bin/bash /home/vminea/tema1.sh
            
 [Install]
 WantedBy=multi-user.target
