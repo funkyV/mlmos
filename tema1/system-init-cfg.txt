@@ -1,0 +1,1 @@
+github.com/funkyV/mlmos.git:pub_key.txt:git,python,docker:1:enp0s8:192.168.99.101:my-centos-vm.locallan:255.255.255.0
